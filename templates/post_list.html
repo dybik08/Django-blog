@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+  {% block content %}
+        <div class="col-sm-8 col-sm-offset-2">
+        <h1>{{ title }}</h1>
+            <form method="get" action="">
+                <input type="text" name="q" placeholder="Search posts" value="{{request.GET.q}}">
+                <input type="submit" value="Search" >
+            </form>
+
+        {% for object in object_list %}
+          <div class="row">
+          <div class="col-sm-12">
+            <div class="thumbnail">
+
+              <div class="caption">
+                  {% if object.draft %}<h3>Staff only: Draft</h3>{% endif %} {% if object.publish > today %}<h3>Staff only: Future Post</h3>{% endif %}
+                <h3><a href='{{ object.get_absolute_url }}'>{{object.title}}</a>
+                    <small>
+                        {% if object.draft %}
+                        {{object.publish}}
+                        {% else %}
+                        {{object.timestamp}}
+                        {% endif %}
+                    </small>
+                </h3>
+                <p>Author: {{object.user}}</p>
+                <p>{{object.content | linebreaks | truncatechars:90 }}</p>
+                <p>
+                    <a href='{{ object.get_absolute_url }}' class="btn btn-primary" role="button">View</a>
+                </p>
+              </div>
+                {% if object.image %}
+               <img src='{{ object.image.url }}' class="img-responsive" alt="">
+                {% endif %}
+            </div>
+          </div>
+          <hr/>
+          </div>
+
+        {% endfor %}
+
+        <div class="pagination">
+            <span class="step-links">
+                {% if object_list.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?{{ page_request_var }}={{ contacts.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">previous</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ object_list.number }} of {{ object_list.paginator.num_pages }}.
+                </span>
+
+                {% if object_list.has_next %}
+                    <a href="?page={{ object_list.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">next</a>
+                    <a href="?page={{ object_list.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+
+        </div>
+    {% endblock content %}
